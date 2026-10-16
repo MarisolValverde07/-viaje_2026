@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12201b">
+<title>Tu cumpleaños en 4 aventuras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f6f3;--card:#fff;--ink:#14231d;--soft:#5b6f67;--line:#d5e2db;--moss:#2f6b57;--pink:#ff5f7e;--sun:#ffc24b;--lock:#e4ede8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12201b;--card:#1a2d26;--ink:#eef6f2;--soft:#9db5ab;--line:#2c453b;--moss:#6fcaa8;--lock:#223a31}}
+:root[data-theme="dark"]{--bg:#12201b;--card:#1a2d26;--ink:#eef6f2;--soft:#9db5ab;--line:#2c453b;--moss:#6fcaa8;--lock:#223a31}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 'DM Sans',system-ui,sans-serif;min-height:100%}
+main{max-width:520px;margin:0 auto;padding:28px 20px 60px}
+h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;line-height:1.1}
+.hero{text-align:center;padding:24px 0 8px}
+.hero h1{font-size:clamp(2.1rem,9vw,2.9rem);letter-spacing:-.02em}
+.hero h1 em{font-style:italic;color:var(--pink)}
+.hero p{color:var(--soft);margin:12px auto 0;max-width:34ch}
+.next{margin:26px 0 8px;padding:22px 16px;border-radius:28px;text-align:center;color:#fff;background:linear-gradient(135deg,#2f6b57,#1c4a3c 60%,#14231d)}
+.next small{display:block;opacity:.85;font-size:.9rem}
+.clock{display:flex;justify-content:center;gap:10px;margin-top:12px}
+.clock div{min-width:62px;padding:10px 4px;background:rgba(255,255,255,.12);border-radius:16px}
+.clock b{display:block;font:600 1.9rem/1 'Fraunces',serif;font-variant-numeric:tabular-nums}
+.clock span{font-size:.75rem;opacity:.8}
+.trail{position:relative;margin-top:28px;padding-left:34px}
+.trail::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;border-left:2px dashed var(--line)}
+.stop{position:relative;margin-bottom:22px}
+.dot{position:absolute;left:-34px;top:20px;width:24px;height:24px;border-radius:50%;background:var(--lock);border:2px solid var(--line);display:grid;place-items:center;font-size:12px}
+.stop.open .dot{background:var(--pink);border-color:var(--pink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px}
+.when{color:var(--soft);font-size:.9rem;margin:0 0 6px}
+.card h2{font-size:1.5rem}
+.locked h2{filter:blur(7px);user-select:none}
+.locked .cd{margin-top:14px;padding:12px 14px;background:var(--lock);border-radius:14px;font-size:.92rem;color:var(--soft)}
+.locked .cd b{color:var(--ink);font-variant-numeric:tabular-nums}
+.msg{margin:14px 0;padding:14px 16px;border-left:4px solid var(--pink);background:var(--lock);border-radius:0 14px 14px 0;white-space:pre-line}
+.pack{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.pack li{padding:6px 12px;border-radius:999px;background:var(--lock);font-size:.9rem}
+.stop.final .card{background:linear-gradient(135deg,#ff5f7e,#ff8a5c);color:#fff;border:0}
+.stop.final .when{color:rgba(255,255,255,.9)}
+.stop.final.locked-final .card{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.stop.final.locked-final .when{color:var(--soft)}
+.stop.final .msg{background:rgba(255,255,255,.18);border-color:#fff}
+.stop.final .pack li{background:rgba(255,255,255,.2)}
+.fresh .card{animation:pop .7s ease}
+@keyframes pop{0%{transform:scale(.96)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.fresh .card{animation:none}}
+footer{text-align:center;color:var(--soft);font-size:.85rem;margin-top:30px}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <h1>Feliz cumple, <em id="name"></em></h1>
+    <p>Cuatro aventuras, una por semana. Cada una se abre unos días antes. No hay espoilers.</p>
+  </header>
+  <section class="next" aria-live="polite">
+    <small id="nextLabel"></small>
+    <div class="clock" id="clock"></div>
+  </section>
+  <section class="trail" id="trail"></section>
+  <footer id="foot"></footer>
+</main>
+
+<script>
+/* ============ EDITA AQUÍ ============ */
+const CONFIG = {
+  herName: "mi amor",
+  myName: "Tu nombre",
+  // Fechas con hora de Costa Rica (-06:00). "unlock" = cuándo se abre cada sorpresa.
+  stops: [
+    { date:"2026-11-29", unlock:"2026-11-26T08:00:00-06:00", title:"Sabanas Oka", place:"Tour todo incluido",
+      message:"Prepárate para un día entero de aventura. Todo está incluido, solo ven con ganas de disfrutar.\nTe quiero mucho. ❤️ — ",
+      pack:["Ropa cómoda","Zapatos que se puedan mojar","Bloqueador","Gorra","Cambio de ropa","Cámara cargada"] },
+    { date:"2026-12-06", unlock:"2026-12-03T08:00:00-06:00", title:"Cloudbridge Nature Reserve", place:"Bosque nuboso y puentes colgantes",
+      message:"Este día hace fresco y hay neblina. Abrígate y trae energía para caminar.\nNo incluye comida, así que llevamos snacks. — ",
+      pack:["Chaqueta ligera","Zapatos de caminar","Capa para la lluvia","Snacks","Agua"] },
+    { date:"2026-12-13", unlock:"2026-12-10T08:00:00-06:00", title:"Nauyacas Waterfalls o Aguas Termales", place:"Cascadas / Aguas termales",
+      message:"Este día va a ser de agua. Trae traje de baño y toalla, y yo me encargo del resto. — ",
+      pack:["Traje de baño","Toalla","Sandalias","Ropa seca","Bolsa para ropa mojada"] },
+    { date:"2026-12-21", unlock:"2026-12-18T08:00:00-06:00", title:"Parapente: la aventura final", place:"Con rótulo de feliz cumpleaños",
+      message:"Esta es la grande. Vamos a volar y a celebrar que existes.\nDuerme bien la noche anterior. — ", final:true,
+      pack:["Ropa deportiva","Tenis cerrados","Pelo recogido","Desayuno ligero","Mucha emoción"] }
+  ]
+};
+/* ===================================== */
+
+const $ = id => document.getElementById(id);
+const demo = new URLSearchParams(location.search).has("demo"); // ?demo=1 abre todo para que pruebes
+const MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const DAYS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const fmtDate = s => { const [y,m,d]=s.split("-").map(Number); const w=new Date(y,m-1,d).getDay(); return `${DAYS[w]} ${d} de ${MONTHS[m-1]}`; };
+const parts = ms => { const s=Math.max(0,Math.floor(ms/1000)); return {d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60}; };
+const pad = n => String(n).padStart(2,"0");
+const isOpen = st => demo || Date.now() >= new Date(st.unlock).getTime();
+const esc = t => String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("name").textContent = CONFIG.herName;
+$("foot").textContent = "Hecho con cariño por " + CONFIG.myName;
+
+function build(){
+  const stops = CONFIG.stops, wasOpen = build.prev || [];
+  $("trail").innerHTML = stops.map((st,i)=>{
+    const open = isOpen(st);
+    const cls = ["stop", open?"open":"", st.final?(open?"final":"final locked-final"):"", open&&wasOpen[i]===false?"fresh":""].join(" ");
+    const body = open
+      ? `<p class="when">${fmtDate(st.date)}</p><h2>${esc(st.title)}</h2><p class="when" style="margin-top:4px">${esc(st.place)}</p>
+         <div class="msg">${esc(st.message)}${esc(CONFIG.myName)}</div>
+         <p class="when">Lo que debes alistar</p><ul class="pack">${st.pack.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`
+      : `<p class="when">${fmtDate(st.date)}</p><h2>${esc(st.title)}</h2>
+         <div class="cd">🔒 Se abre en <b data-u="${i}"></b></div>`;
+    return `<article class="${cls} ${open?"":"locked"}"><span class="dot">${open?"✓":"🔒"}</span><div class="card">${body}</div></article>`;
+  }).join("");
+  build.prev = stops.map(isOpen);
+}
+
+function tick(){
+  const now = Date.now(), stops = CONFIG.stops;
+  if (stops.some((st,i)=>isOpen(st)!==build.prev[i])) build();
+  stops.forEach((st,i)=>{
+    const el = document.querySelector(`[data-u="${i}"]`);
+    if(el){ const p=parts(new Date(st.unlock)-now); el.textContent = `${p.d}d ${pad(p.h)}h ${pad(p.m)}m ${pad(p.s)}s`; }
+  });
+  const nextStop = stops.find(st=>!isOpen(st));
+  let target, label;
+  if (nextStop){ target = new Date(nextStop.unlock); label = "Próxima sorpresa se abre en"; }
+  else { const last = new Date(stops[stops.length-1].date+"T08:00:00-06:00"); target = last; label = now<last ? "Faltan para la aventura final" : "Gracias por volar conmigo 💛"; }
+  const p = parts(target - now);
+  $("nextLabel").textContent = label;
+  $("clock").innerHTML = (target-now<=0 && !nextStop) ? "" :
+    [["d",p.d,"días"],["h",pad(p.h),"horas"],["m",pad(p.m),"min"],["s",pad(p.s),"seg"]].map(x=>`<div><b>${x[1]}</b><span>${x[2]}</span></div>`).join("");
+}
+build(); tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>
