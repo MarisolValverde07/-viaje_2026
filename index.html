@@ -1,206 +1,619 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#12201b">
-<title>Tu cumpleaños en 4 aventuras</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f1f6f3;--card:#fff;--ink:#14231d;--soft:#5b6f67;--line:#d5e2db;--moss:#2f6b57;--pink:#ff5f7e;--sun:#ffc24b;--lock:#e4ede8;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12201b;--card:#1a2d26;--ink:#eef6f2;--soft:#9db5ab;--line:#2c453b;--moss:#6fcaa8;--lock:#223a31}}
-:root[data-theme="dark"]{--bg:#12201b;--card:#1a2d26;--ink:#eef6f2;--soft:#9db5ab;--line:#2c453b;--moss:#6fcaa8;--lock:#223a31}
-*{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 'DM Sans',system-ui,sans-serif;min-height:100%}
-main{max-width:520px;margin:0 auto;padding:28px 20px 60px}
-h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;line-height:1.1}
-.hero{text-align:center;padding:24px 0 8px}
-.hero h1{font-size:clamp(2.1rem,9vw,2.9rem);letter-spacing:-.02em}
-.hero h1 em{font-style:italic;color:var(--pink)}
-.hero p{color:var(--soft);margin:12px auto 0;max-width:34ch}
-.next{margin:26px 0 8px;padding:22px 16px;border-radius:28px;text-align:center;color:#fff;background:linear-gradient(135deg,#2f6b57,#1c4a3c 60%,#14231d)}
-.next[hidden]{display:none}
-.next small{display:block;opacity:.85;font-size:.9rem}
-.clock{display:flex;justify-content:center;gap:10px;margin-top:12px}
-.clock div{min-width:62px;padding:10px 4px;background:rgba(255,255,255,.12);border-radius:16px}
-.clock b{display:block;font:600 1.9rem/1 'Fraunces',serif;font-variant-numeric:tabular-nums}
-.clock span{font-size:.75rem;opacity:.8}
-.trail{position:relative;margin-top:28px;padding-left:34px}
-.trail::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;border-left:2px dashed var(--line)}
-.stop{position:relative;margin-bottom:22px}
-.dot{position:absolute;left:-34px;top:20px;width:24px;height:24px;border-radius:50%;background:var(--lock);border:2px solid var(--line);display:grid;place-items:center;font-size:12px}
-.stop.open .dot{background:var(--pink);border-color:var(--pink)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px}
-.when{color:var(--soft);font-size:.9rem;margin:0 0 6px}
-.card h2{font-size:1.5rem}
-.locked h2{filter:blur(7px);user-select:none}
-.locked .cd{margin-top:14px;padding:12px 14px;background:var(--lock);border-radius:14px;font-size:.92rem;color:var(--soft)}
-.locked .cd b{color:var(--ink);font-variant-numeric:tabular-nums}
-.msg{margin:14px 0;padding:14px 16px;border-left:4px solid var(--pink);background:var(--lock);border-radius:0 14px 14px 0;white-space:pre-line}
-.pack{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
-.pack li{padding:6px 12px;border-radius:999px;background:var(--lock);font-size:.9rem}
-.stop.final .card{background:linear-gradient(135deg,#ff5f7e,#ff8a5c);color:#fff;border:0}
-.stop.final .when{color:rgba(255,255,255,.9)}
-.stop.final.locked-final .card{background:var(--card);color:var(--ink);border:1px solid var(--line)}
-.stop.final.locked-final .when{color:var(--soft)}
-.stop.final .msg{background:rgba(255,255,255,.18);border-color:#fff}
-.stop.final .pack li{background:rgba(255,255,255,.2)}
-.fresh .card{animation:pop .7s ease}
-@keyframes pop{0%{transform:scale(.96)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
-/* Pantalla del 25 de diciembre */
-.gift{margin:26px 0 8px;padding:34px 22px 28px;border-radius:30px;text-align:center;color:#fff;background:linear-gradient(150deg,#ff5f7e,#ff8a5c 55%,#ffc24b);box-shadow:0 14px 40px rgba(255,95,126,.35);animation:pop .9s ease}
-.gift .big{font-size:3rem;line-height:1}
-.gift h2{font-size:clamp(1.8rem,8vw,2.4rem);margin:12px 0 18px}
-.gift p{margin:0 0 14px;font-size:1.05rem;white-space:pre-line}
-.gift .sign{font:italic 500 1.5rem/1.2 'Fraunces',Georgia,serif;margin-top:20px}
-.btn{margin-top:18px;border:0;border-radius:999px;padding:11px 22px;font:700 .95rem 'DM Sans',sans-serif;color:#b8304e;background:#fff;cursor:pointer}
-#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;display:none;z-index:50}
-@media (prefers-reduced-motion:reduce){.fresh .card,.gift{animation:none}}
-footer{text-align:center;color:var(--soft);font-size:.85rem;margin-top:30px}
-</style>
-</head>
-<body>
-<canvas id="fx" aria-hidden="true"></canvas>
-<main>
-  <header class="hero">
-    <h1>Feliz cumple, <em id="name"></em></h1>
-    <p id="intro">Cuatro sorpresas, una a la vez. Cada una se abre unos días antes. No hay espoilers.</p>
-  </header>
-  <section id="gift"></section>
-  <section class="next" id="nextBox" aria-live="polite">
-    <small id="nextLabel"></small>
-    <div class="clock" id="clock"></div>
-  </section>
-  <section class="trail" id="trail"></section>
-  <footer id="foot"></footer>
-</main>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#12201b" />
+    <title>Tu cumpleaños en 4 aventuras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f1f6f3;
+        --card: #fff;
+        --ink: #14231d;
+        --soft: #5b6f67;
+        --line: #d5e2db;
+        --moss: #2f6b57;
+        --pink: #ff5f7e;
+        --sun: #ffc24b;
+        --lock: #e4ede8;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --bg: #12201b;
+          --card: #1a2d26;
+          --ink: #eef6f2;
+          --soft: #9db5ab;
+          --line: #2c453b;
+          --moss: #6fcaa8;
+          --lock: #223a31;
+        }
+      }
+      :root[data-theme='dark'] {
+        --bg: #12201b;
+        --card: #1a2d26;
+        --ink: #eef6f2;
+        --soft: #9db5ab;
+        --line: #2c453b;
+        --moss: #6fcaa8;
+        --lock: #223a31;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          400 16px/1.55 'DM Sans',
+          system-ui,
+          sans-serif;
+        min-height: 100%;
+      }
+      main {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 28px 20px 60px;
+      }
+      h1,
+      h2 {
+        font-family: 'Fraunces', Georgia, serif;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.1;
+      }
+      .hero {
+        text-align: center;
+        padding: 24px 0 8px;
+      }
+      .hero h1 {
+        font-size: clamp(2.1rem, 9vw, 2.9rem);
+        letter-spacing: -0.02em;
+      }
+      .hero h1 em {
+        font-style: italic;
+        color: var(--pink);
+      }
+      .hero p {
+        color: var(--soft);
+        margin: 12px auto 0;
+        max-width: 34ch;
+      }
+      .next {
+        margin: 26px 0 8px;
+        padding: 22px 16px;
+        border-radius: 28px;
+        text-align: center;
+        color: #fff;
+        background: linear-gradient(135deg, #2f6b57, #1c4a3c 60%, #14231d);
+      }
+      .next[hidden] {
+        display: none;
+      }
+      .next small {
+        display: block;
+        opacity: 0.85;
+        font-size: 0.9rem;
+      }
+      .clock {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .clock div {
+        min-width: 62px;
+        padding: 10px 4px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+      }
+      .clock b {
+        display: block;
+        font:
+          600 1.9rem/1 'Fraunces',
+          serif;
+        font-variant-numeric: tabular-nums;
+      }
+      .clock span {
+        font-size: 0.75rem;
+        opacity: 0.8;
+      }
+      .trail {
+        position: relative;
+        margin-top: 28px;
+        padding-left: 34px;
+      }
+      .trail::before {
+        content: '';
+        position: absolute;
+        left: 11px;
+        top: 8px;
+        bottom: 8px;
+        border-left: 2px dashed var(--line);
+      }
+      .stop {
+        position: relative;
+        margin-bottom: 22px;
+      }
+      .dot {
+        position: absolute;
+        left: -34px;
+        top: 20px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--lock);
+        border: 2px solid var(--line);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+      }
+      .stop.open .dot {
+        background: var(--pink);
+        border-color: var(--pink);
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 20px;
+      }
+      .when {
+        color: var(--soft);
+        font-size: 0.9rem;
+        margin: 0 0 6px;
+      }
+      .card h2 {
+        font-size: 1.5rem;
+      }
+      .locked h2 {
+        filter: blur(7px);
+        user-select: none;
+      }
+      .locked .cd {
+        margin-top: 14px;
+        padding: 12px 14px;
+        background: var(--lock);
+        border-radius: 14px;
+        font-size: 0.92rem;
+        color: var(--soft);
+      }
+      .locked .cd b {
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .msg {
+        margin: 14px 0;
+        padding: 14px 16px;
+        border-left: 4px solid var(--pink);
+        background: var(--lock);
+        border-radius: 0 14px 14px 0;
+        white-space: pre-line;
+      }
+      .pack {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .pack li {
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--lock);
+        font-size: 0.9rem;
+      }
+      .stop.final .card {
+        background: linear-gradient(135deg, #ff5f7e, #ff8a5c);
+        color: #fff;
+        border: 0;
+      }
+      .stop.final .when {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .stop.final.locked-final .card {
+        background: var(--card);
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .stop.final.locked-final .when {
+        color: var(--soft);
+      }
+      .stop.final .msg {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: #fff;
+      }
+      .stop.final .pack li {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .fresh .card {
+        animation: pop 0.7s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.96);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      /* Pantalla del 25 de diciembre */
+      .gift {
+        margin: 26px 0 8px;
+        padding: 34px 22px 28px;
+        border-radius: 30px;
+        text-align: center;
+        color: #fff;
+        background: linear-gradient(150deg, #ff5f7e, #ff8a5c 55%, #ffc24b);
+        box-shadow: 0 14px 40px rgba(255, 95, 126, 0.35);
+        animation: pop 0.9s ease;
+      }
+      .gift .big {
+        font-size: 3rem;
+        line-height: 1;
+      }
+      .gift h2 {
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
+        margin: 12px 0 18px;
+      }
+      .gift p {
+        margin: 0 0 14px;
+        font-size: 1.05rem;
+        white-space: pre-line;
+      }
+      .gift .sign {
+        font:
+          italic 500 1.5rem/1.2 'Fraunces',
+          Georgia,
+          serif;
+        margin-top: 20px;
+      }
+      .btn {
+        margin-top: 18px;
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 22px;
+        font:
+          700 0.95rem 'DM Sans',
+          sans-serif;
+        color: #b8304e;
+        background: #fff;
+        cursor: pointer;
+      }
+      #fx {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        display: none;
+        z-index: 50;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .fresh .card,
+        .gift {
+          animation: none;
+        }
+      }
+      footer {
+        text-align: center;
+        color: var(--soft);
+        font-size: 0.85rem;
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="fx" aria-hidden="true"></canvas>
+    <main>
+      <header class="hero">
+        <h1>Feliz cumple, <em id="name"></em></h1>
+        <p id="intro">
+          Cuatro sorpresas, una a la vez. Cada una se abre unos días antes. No
+          hay espoilers.
+        </p>
+      </header>
+      <section id="gift"></section>
+      <section class="next" id="nextBox" aria-live="polite">
+        <small id="nextLabel"></small>
+        <div class="clock" id="clock"></div>
+      </section>
+      <section class="trail" id="trail"></section>
+      <footer id="foot"></footer>
+    </main>
 
-<script>
-/* ============ EDITA AQUÍ ============ */
-const CONFIG = {
-  herName: "mi amor",
-  myName: "Sol",
-  // Todas las fechas con hora de Costa Rica (-06:00).
-  // "unlock" = cuándo se abre la sorpresa. "at" = hora real de la aventura (para el reloj).
-  stops: [
-    { date:"2026-11-29", at:"2026-11-29T01:00:00-06:00", unlock:"2026-11-26T08:00:00-06:00",
-      title:"Sabanas Oka", place:"Aventura #1 · Domingo, 1:00 a.m.",
-      message:"Nuestra primera aventura nos lleva a Sabanas Oka.\nSaldremos de madrugada, a la 1:00 a.m. desde la bomba Coopeagri, así que descansa bien. Lleva ropa de senderismo, protección solar y mucha hidratación. Será un día para recordar.\nCon todo mi cariño, ",
-      pack:["Ropa de senderismo","Protección solar","Hidratación","Ganas de aventura"] },
+    <script>
+      /* ============ EDITA AQUÍ ============ */
+      const CONFIG = {
+        herName: 'mi amor',
+        myName: 'Sol',
+        // Todas las fechas con hora de Costa Rica (-06:00).
+        // "unlock" = cuándo se abre la sorpresa. "at" = hora real de la aventura (para el reloj).
+        stops: [
+          {
+            date: '2026-11-29',
+            at: '2026-11-29T01:00:00-06:00',
+            unlock: '2026-11-23T08:00:00-06:00',
+            title: 'Sabanas Oka',
+            place: 'Aventura #1 · Domingo, 1:00 a.m.',
+            message:
+              'Nuestra primera aventura nos lleva a Sabanas Oka.\nSaldremos de madrugada, a la 1:00 a.m. desde la bomba Coopeagri, así que descanse bien. Lleve ropa de senderismo, protección solar y mucha hidratación. Será un día para recordar.',
+            pack: [
+              'Ropa de senderismo',
+              'Protección solar',
+              'Hidratación',
+              'Ganas de aventura',
+            ],
+          },
 
-    { date:"2026-12-06", at:"2026-12-06T19:30:00-06:00", unlock:"2026-12-03T08:00:00-06:00",
-      title:"Restaurante Mirador La Torre", place:"Aventura #2 · Domingo, 7:30 p.m.",
-      message:"Esta vez no es una aventura, es una cita solo para nosotras.\nDebes estar lista a las 7:30 p.m. Vístete bien: cómoda, pero linda como siempre. Yo me encargo del resto.\nCon todo mi cariño, ",
-      pack:["Outfit bonito pero cómodo","Lista a las 7:30 p.m.","Buen apetito","Tu mejor sonrisa"] },
+          {
+            date: '2026-12-06',
+            at: '2026-12-06T19:30:00-06:00',
+            unlock: '2026-12-01T08:00:00-06:00',
+            title: 'Restaurante Mirador La Torre',
+            place: 'Aventura #2 · Domingo, 7:30 p.m.',
+            message:
+              'Esta vez no es una aventura, es una cita solo para nosotras.\nDebe estar lista a las 7:30 p.m. Vístase bien: cómoda, pero linda como siempre. Yo me encargo del resto.',
+            pack: [
+              'Outfit bonito pero cómodo',
+              'Lista a las 7:30 p.m.',
+              'Buen apetito',
+              'Su mejor sonrisa',
+            ],
+          },
 
-    { date:"2026-12-13", at:"2026-12-13T09:00:00-06:00", unlock:"2026-12-10T08:00:00-06:00",
-      title:"Cataratas Nauyacas", place:"Aventura #3 · Domingo, 9:00 a.m.",
-      message:"Esta aventura es de cascadas y agua.\nSaldremos a las 9:00 a.m. Lleva ropa cómoda para senderismo y ropa para meterte al agua. Vamos a disfrutar de la naturaleza a lo grande.\nCon todo mi cariño, ",
-      pack:["Ropa cómoda de senderismo","Ropa para meterse al agua","Toalla","Ropa seca de cambio"] },
+          {
+            date: '2026-12-13',
+            at: '2026-12-13T09:00:00-06:00',
+            unlock: '2026-12-08T08:00:00-06:00',
+            title: 'Cataratas Nauyacas',
+            place: 'Aventura #3 · Domingo, 9:00 a.m.',
+            message:
+              'Esta aventura es de cascadas y amigos.\nSaldremos a las 9:00 a.m. Lleve ropa cómoda para senderismo y ropa para meterse al agua. Vamos a disfrutar de la naturaleza a lo grande.',
+            pack: [
+              'Ropa cómoda de senderismo',
+              'Ropa para meterse al agua',
+              'Toalla',
+              'Ropa seca de cambio',
+            ],
+          },
 
-    { date:"2026-12-22", at:"2026-12-22T10:00:00-06:00", unlock:"2026-12-19T08:00:00-06:00", final:true,
-      title:"Parapente", place:"Aventura #4 · Martes, 10:00 a.m.",
-      message:"La última aventura es la más especial y la más extrema: vamos a volar en parapente.\nSerá el martes 22 de diciembre a las 10:00 a.m. Ponte ropa deportiva, bloqueador y llévate tu botella de agua. Vamos a celebrarte por todo lo alto, y también estaremos juntas.\nCon todo mi cariño, ",
-      pack:["Ropa deportiva","Bloqueador","Hidratación","Mucha emoción"] }
-  ],
+          {
+            date: '2026-12-22',
+            at: '2026-12-22T10:00:00-06:00',
+            unlock: '2026-12-17T08:00:00-06:00',
+            final: true,
+            title: 'Parapente',
+            place: 'Aventura #4 · Martes, 10:00 a.m.',
+            message:
+              'La última aventura es la más especial y la más extrema: vamos a volar en parapente.\nSerá el martes 22 de diciembre a las 10:00 a.m. Póngase ropa deportiva y bloqueador, y lleve su botella de agua. Vamos a celebrarla por todo lo alto, y también estaremos juntas.',
+            pack: [
+              'Ropa deportiva',
+              'Bloqueador',
+              'Hidratación',
+              'Mucha emoción',
+            ],
+          },
+        ],
 
-  // Pantalla final: se abre a las 12:00 a.m. del 25 de diciembre
-  birthday: {
-    date:"2026-12-25", unlock:"2026-12-25T00:00:00-06:00",
-    title:"¡Oficialmente tu cumpleaños!",
-    paragraphs:[
-      "Espero que cada minuto compartido conmigo valga la pena, mi amor.",
-      "Deseo lo mejor para usted: que todos sus objetivos se cumplan, que tengas mucha paz, que recibas mucho amor y, sobre todo, que seas muy feliz.",
-      "Usted tiene mucho valor como persona y, ante mis ojos, es mi persona."
-    ],
-    closing:"Te amo."
-  }
-};
-/* ===================================== */
+        // Pantalla final: se abre a las 12:00 a.m. del 25 de diciembre
+        birthday: {
+          date: '2026-12-25',
+          unlock: '2026-12-25T00:00:00-06:00',
+          title: '¡Oficialmente tu cumpleaños!',
+          paragraphs: [
+            'Espero que cada minuto compartido conmigo valga la pena, mi amor.',
+            'Deseo lo mejor para usted: que todos sus objetivos se cumplan, que tengas mucha paz, que recibas mucho amor y, sobre todo, que seas muy feliz.',
+            'Usted tiene mucho valor como persona y, ante mis ojos, es mi persona.',
+          ],
+          closing: 'Te amo.',
+        },
+      }
+      /* ===================================== */
 
-const $ = id => document.getElementById(id);
-const demo = new URLSearchParams(location.search).has("demo"); // ?demo=1 abre todo para que pruebes
-const MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-const DAYS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-const fmtDate = s => { const [y,m,d]=s.split("-").map(Number); const w=new Date(y,m-1,d).getDay(); return `${DAYS[w]} ${d} de ${MONTHS[m-1]}`; };
-const parts = ms => { const s=Math.max(0,Math.floor(ms/1000)); return {d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60}; };
-const pad = n => String(n).padStart(2,"0");
-const time = t => new Date(t).getTime();
-const isOpen = o => demo || Date.now() >= time(o.unlock);
-const esc = t => String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const B = CONFIG.birthday;
+      const $ = (id) => document.getElementById(id)
+      const demo = new URLSearchParams(location.search).has('demo') // ?demo=1 abre todo para que pruebes
+      const MONTHS = [
+        'enero',
+        'febrero',
+        'marzo',
+        'abril',
+        'mayo',
+        'junio',
+        'julio',
+        'agosto',
+        'septiembre',
+        'octubre',
+        'noviembre',
+        'diciembre',
+      ]
+      const DAYS = [
+        'domingo',
+        'lunes',
+        'martes',
+        'miércoles',
+        'jueves',
+        'viernes',
+        'sábado',
+      ]
+      const fmtDate = (s) => {
+        const [y, m, d] = s.split('-').map(Number)
+        const w = new Date(y, m - 1, d).getDay()
+        return `${DAYS[w]} ${d} de ${MONTHS[m - 1]}`
+      }
+      const parts = (ms) => {
+        const s = Math.max(0, Math.floor(ms / 1000))
+        return {
+          d: Math.floor(s / 86400),
+          h: Math.floor((s % 86400) / 3600),
+          m: Math.floor((s % 3600) / 60),
+          s: s % 60,
+        }
+      }
+      const pad = (n) => String(n).padStart(2, '0')
+      const time = (t) => new Date(t).getTime()
+      const isOpen = (o) => demo || Date.now() >= time(o.unlock)
+      const esc = (t) =>
+        String(t).replace(
+          /[&<>"]/g,
+          (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c],
+        )
+      const B = CONFIG.birthday
 
-$("name").textContent = CONFIG.herName;
-$("foot").textContent = "Hecho con cariño por " + CONFIG.myName;
+      $('name').textContent = CONFIG.herName
+      $('foot').textContent = 'Hecho con cariño por ' + CONFIG.myName
 
-function confetti(){
-  if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
-  const c=$("fx"), x=c.getContext("2d"), cols=["#ff5f7e","#ffc24b","#6fcaa8","#ffffff","#ff8a5c"];
-  c.width=innerWidth; c.height=innerHeight; c.style.display="block";
-  const ps=Array.from({length:140},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.6,w:6+Math.random()*6,h:8+Math.random()*8,vy:2+Math.random()*3.5,vx:-1.5+Math.random()*3,r:Math.random()*6,vr:-.2+Math.random()*.4,c:cols[Math.random()*5|0]}));
-  let f=0;
-  (function loop(){
-    x.clearRect(0,0,c.width,c.height);
-    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore();});
-    if(++f<320) requestAnimationFrame(loop); else {x.clearRect(0,0,c.width,c.height);c.style.display="none";}
-  })();
-}
+      function confetti() {
+        if (matchMedia('(prefers-reduced-motion:reduce)').matches) return
+        const c = $('fx'),
+          x = c.getContext('2d'),
+          cols = ['#ff5f7e', '#ffc24b', '#6fcaa8', '#ffffff', '#ff8a5c']
+        c.width = innerWidth
+        c.height = innerHeight
+        c.style.display = 'block'
+        const ps = Array.from({ length: 140 }, () => ({
+          x: Math.random() * c.width,
+          y: -20 - Math.random() * c.height * 0.6,
+          w: 6 + Math.random() * 6,
+          h: 8 + Math.random() * 8,
+          vy: 2 + Math.random() * 3.5,
+          vx: -1.5 + Math.random() * 3,
+          r: Math.random() * 6,
+          vr: -0.2 + Math.random() * 0.4,
+          c: cols[(Math.random() * 5) | 0],
+        }))
+        let f = 0
+        ;(function loop() {
+          x.clearRect(0, 0, c.width, c.height)
+          ps.forEach((p) => {
+            p.x += p.vx
+            p.y += p.vy
+            p.r += p.vr
+            x.save()
+            x.translate(p.x, p.y)
+            x.rotate(p.r)
+            x.fillStyle = p.c
+            x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+            x.restore()
+          })
+          if (++f < 320) requestAnimationFrame(loop)
+          else {
+            x.clearRect(0, 0, c.width, c.height)
+            c.style.display = 'none'
+          }
+        })()
+      }
 
-function build(){
-  const stops = CONFIG.stops, wasOpen = build.prev || [], bOpen = isOpen(B);
-  let html = stops.map((st,i)=>{
-    const open = isOpen(st);
-    const cls = ["stop", open?"open":"", st.final?(open?"final":"final locked-final"):"", open&&wasOpen[i]===false?"fresh":""].join(" ");
-    const body = open
-      ? `<p class="when">${fmtDate(st.date)}</p><h2>${esc(st.title)}</h2><p class="when" style="margin-top:4px">${esc(st.place)}</p>
-         <div class="msg">${esc(st.message)}${esc(CONFIG.myName)}</div>
-         <p class="when">Lo que debes alistar</p><ul class="pack">${st.pack.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`
-      : `<p class="when">${fmtDate(st.date)}</p><h2>${esc(st.title)}</h2>
-         <div class="cd">🔒 Se abre en <b data-u="${i}"></b></div>`;
-    return `<article class="${cls} ${open?"":"locked"}"><span class="dot">${open?"✓":"🔒"}</span><div class="card">${body}</div></article>`;
-  }).join("");
+      function build() {
+        const stops = CONFIG.stops,
+          wasOpen = build.prev || [],
+          bOpen = isOpen(B)
+        let html = stops
+          .map((st, i) => {
+            const open = isOpen(st)
+            const cls = [
+              'stop',
+              open ? 'open' : '',
+              st.final ? (open ? 'final' : 'final locked-final') : '',
+              open && wasOpen[i] === false ? 'fresh' : '',
+            ].join(' ')
+            const body = open
+              ? `<p class="when">${fmtDate(st.date)}</p><h2>${esc(st.title)}</h2><p class="when" style="margin-top:4px">${esc(st.place)}</p>
+         <div class="msg">${esc(st.message)}</div>
+         <p class="when">Lo que debes alistar</p><ul class="pack">${st.pack.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>`
+              : `<p class="when">${fmtDate(st.date)}</p><h2>${esc(st.title)}</h2>
+         <div class="cd">🔒 Se abre en <b data-u="${i}"></b></div>`
+            return `<article class="${cls} ${open ? '' : 'locked'}"><span class="dot">${open ? '✓' : '🔒'}</span><div class="card">${body}</div></article>`
+          })
+          .join('')
 
-  if (!bOpen) html += `<article class="stop locked"><span class="dot">🔒</span><div class="card">
+        if (!bOpen)
+          html += `<article class="stop locked"><span class="dot">🔒</span><div class="card">
       <p class="when">${fmtDate(B.date)}</p><h2>Una última sorpresa</h2>
-      <div class="cd">🔒 Se abre en <b data-u="b"></b></div></div></article>`;
-  $("trail").innerHTML = html;
+      <div class="cd">🔒 Se abre en <b data-u="b"></b></div></div></article>`
+        $('trail').innerHTML = html
 
-  $("gift").innerHTML = bOpen ? `<div class="gift"><div class="big">🎂</div><h2>${esc(B.title)}</h2>
-      ${B.paragraphs.map(p=>`<p>${esc(p)}</p>`).join("")}
+        $('gift').innerHTML = bOpen
+          ? `<div class="gift"><div class="big">🎂</div><h2>${esc(B.title)}</h2>
+      ${B.paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}
       <div class="sign">${esc(B.closing)}<br>— ${esc(CONFIG.myName)}</div>
-      <button class="btn" type="button" onclick="confetti()">🎉 Lanzar confeti</button></div>` : "";
-  if (bOpen) {
-    $("intro").textContent = "Gracias por cada aventura. Esto es para ti.";
-    if (!build.shown) { build.shown = true; setTimeout(confetti, 400); }
-  }
-  build.prev = stops.map(isOpen); build.prevB = bOpen;
-}
+      <button class="btn" type="button" onclick="confetti()">🎉 Lanzar confeti</button></div>`
+          : ''
+        if (bOpen) {
+          $('intro').textContent = 'Gracias por cada aventura. Esto es para ti.'
+          if (!build.shown) {
+            build.shown = true
+            setTimeout(confetti, 400)
+          }
+        }
+        build.prev = stops.map(isOpen)
+        build.prevB = bOpen
+      }
 
-function tick(){
-  const now = Date.now(), stops = CONFIG.stops;
-  if (stops.some((st,i)=>isOpen(st)!==build.prev[i]) || isOpen(B)!==build.prevB) build();
-  const setCd = (key,t)=>{ const el=document.querySelector(`[data-u="${key}"]`); if(el){ const p=parts(time(t)-now); el.textContent=`${p.d}d ${pad(p.h)}h ${pad(p.m)}m ${pad(p.s)}s`; } };
-  stops.forEach((st,i)=>setCd(i,st.unlock)); setCd("b",B.unlock);
+      function tick() {
+        const now = Date.now(),
+          stops = CONFIG.stops
+        if (
+          stops.some((st, i) => isOpen(st) !== build.prev[i]) ||
+          isOpen(B) !== build.prevB
+        )
+          build()
+        const setCd = (key, t) => {
+          const el = document.querySelector(`[data-u="${key}"]`)
+          if (el) {
+            const p = parts(time(t) - now)
+            el.textContent = `${p.d}d ${pad(p.h)}h ${pad(p.m)}m ${pad(p.s)}s`
+          }
+        }
+        stops.forEach((st, i) => setCd(i, st.unlock))
+        setCd('b', B.unlock)
 
-  // Próximo hito: desbloqueo o hora real de la aventura (siempre con la fecha real)
-  const c = [];
-  stops.forEach(st=>{
-    if (time(st.unlock)>now) c.push({t:time(st.unlock),l:"Próxima sorpresa se abre en"});
-    else if (time(st.at)>now) c.push({t:time(st.at),l:"Faltan para: "+st.title});
-  });
-  if (time(B.unlock)>now) c.push({t:time(B.unlock),l:"La sorpresa final se abre en"});
-  c.sort((a,b)=>a.t-b.t);
-  $("nextBox").hidden = !c.length;
-  if (c.length){
-    const p = parts(c[0].t-now);
-    $("nextLabel").textContent = c[0].l;
-    $("clock").innerHTML = [[p.d,"días"],[pad(p.h),"horas"],[pad(p.m),"min"],[pad(p.s),"seg"]].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
-  }
-}
-build(); tick(); setInterval(tick,1000);
-</script>
-</body>
+        // Próximo hito: desbloqueo o hora real de la aventura (siempre con la fecha real)
+        const c = []
+        stops.forEach((st) => {
+          if (time(st.unlock) > now)
+            c.push({ t: time(st.unlock), l: 'Próxima sorpresa se abre en' })
+          else if (time(st.at) > now)
+            c.push({ t: time(st.at), l: 'Faltan para: ' + st.title })
+        })
+        if (time(B.unlock) > now)
+          c.push({ t: time(B.unlock), l: 'La sorpresa final se abre en' })
+        c.sort((a, b) => a.t - b.t)
+        $('nextBox').hidden = !c.length
+        if (c.length) {
+          const p = parts(c[0].t - now)
+          $('nextLabel').textContent = c[0].l
+          $('clock').innerHTML = [
+            [p.d, 'días'],
+            [pad(p.h), 'horas'],
+            [pad(p.m), 'min'],
+            [pad(p.s), 'seg'],
+          ]
+            .map((x) => `<div><b>${x[0]}</b><span>${x[1]}</span></div>`)
+            .join('')
+        }
+      }
+      build()
+      tick()
+      setInterval(tick, 1000)
+    </script>
+  </body>
 </html>
