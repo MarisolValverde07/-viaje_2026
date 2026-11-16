@@ -22,6 +22,7 @@ h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;line-height:
 .hero h1 em{font-style:italic;color:var(--pink)}
 .hero p{color:var(--soft);margin:12px auto 0;max-width:34ch}
 .next{margin:26px 0 8px;padding:22px 16px;border-radius:28px;text-align:center;color:#fff;background:linear-gradient(135deg,#2f6b57,#1c4a3c 60%,#14231d)}
+.next[hidden]{display:none}
 .next small{display:block;opacity:.85;font-size:.9rem}
 .clock{display:flex;justify-content:center;gap:10px;margin-top:12px}
 .clock div{min-width:62px;padding:10px 4px;background:rgba(255,255,255,.12);border-radius:16px}
@@ -49,17 +50,27 @@ h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;line-height:
 .stop.final .pack li{background:rgba(255,255,255,.2)}
 .fresh .card{animation:pop .7s ease}
 @keyframes pop{0%{transform:scale(.96)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
-@media (prefers-reduced-motion:reduce){.fresh .card{animation:none}}
+/* Pantalla del 25 de diciembre */
+.gift{margin:26px 0 8px;padding:34px 22px 28px;border-radius:30px;text-align:center;color:#fff;background:linear-gradient(150deg,#ff5f7e,#ff8a5c 55%,#ffc24b);box-shadow:0 14px 40px rgba(255,95,126,.35);animation:pop .9s ease}
+.gift .big{font-size:3rem;line-height:1}
+.gift h2{font-size:clamp(1.8rem,8vw,2.4rem);margin:12px 0 18px}
+.gift p{margin:0 0 14px;font-size:1.05rem;white-space:pre-line}
+.gift .sign{font:italic 500 1.5rem/1.2 'Fraunces',Georgia,serif;margin-top:20px}
+.btn{margin-top:18px;border:0;border-radius:999px;padding:11px 22px;font:700 .95rem 'DM Sans',sans-serif;color:#b8304e;background:#fff;cursor:pointer}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;display:none;z-index:50}
+@media (prefers-reduced-motion:reduce){.fresh .card,.gift{animation:none}}
 footer{text-align:center;color:var(--soft);font-size:.85rem;margin-top:30px}
 </style>
 </head>
 <body>
+<canvas id="fx" aria-hidden="true"></canvas>
 <main>
   <header class="hero">
     <h1>Feliz cumple, <em id="name"></em></h1>
-    <p>Cuatro aventuras, una por semana. Cada una se abre unos días antes. No hay espoilers.</p>
+    <p id="intro">Cuatro sorpresas, una a la vez. Cada una se abre unos días antes. No hay espoilers.</p>
   </header>
-  <section class="next" aria-live="polite">
+  <section id="gift"></section>
+  <section class="next" id="nextBox" aria-live="polite">
     <small id="nextLabel"></small>
     <div class="clock" id="clock"></div>
   </section>
@@ -71,22 +82,42 @@ footer{text-align:center;color:var(--soft);font-size:.85rem;margin-top:30px}
 /* ============ EDITA AQUÍ ============ */
 const CONFIG = {
   herName: "mi amor",
-  myName: "Tu nombre",
-  // Fechas con hora de Costa Rica (-06:00). "unlock" = cuándo se abre cada sorpresa.
+  myName: "Sol",
+  // Todas las fechas con hora de Costa Rica (-06:00).
+  // "unlock" = cuándo se abre la sorpresa. "at" = hora real de la aventura (para el reloj).
   stops: [
-    { date:"2026-11-29", unlock:"2026-11-26T08:00:00-06:00", title:"Sabanas Oka", place:"Tour todo incluido",
-      message:"Prepárate para un día entero de aventura. Todo está incluido, solo ven con ganas de disfrutar.\nTe quiero mucho. ❤️ — ",
-      pack:["Ropa cómoda","Zapatos que se puedan mojar","Bloqueador","Gorra","Cambio de ropa","Cámara cargada"] },
-    { date:"2026-12-06", unlock:"2026-12-03T08:00:00-06:00", title:"Cloudbridge Nature Reserve", place:"Bosque nuboso y puentes colgantes",
-      message:"Este día hace fresco y hay neblina. Abrígate y trae energía para caminar.\nNo incluye comida, así que llevamos snacks. — ",
-      pack:["Chaqueta ligera","Zapatos de caminar","Capa para la lluvia","Snacks","Agua"] },
-    { date:"2026-12-13", unlock:"2026-12-10T08:00:00-06:00", title:"Nauyacas Waterfalls o Aguas Termales", place:"Cascadas / Aguas termales",
-      message:"Este día va a ser de agua. Trae traje de baño y toalla, y yo me encargo del resto. — ",
-      pack:["Traje de baño","Toalla","Sandalias","Ropa seca","Bolsa para ropa mojada"] },
-    { date:"2026-12-21", unlock:"2026-12-18T08:00:00-06:00", title:"Parapente: la aventura final", place:"Con rótulo de feliz cumpleaños",
-      message:"Esta es la grande. Vamos a volar y a celebrar que existes.\nDuerme bien la noche anterior. — ", final:true,
-      pack:["Ropa deportiva","Tenis cerrados","Pelo recogido","Desayuno ligero","Mucha emoción"] }
-  ]
+    { date:"2026-11-29", at:"2026-11-29T01:00:00-06:00", unlock:"2026-11-26T08:00:00-06:00",
+      title:"Sabanas Oka", place:"Aventura #1 · Domingo, 1:00 a.m.",
+      message:"Nuestra primera aventura nos lleva a Sabanas Oka.\nSaldremos de madrugada, a la 1:00 a.m. desde la bomba Coopeagri, así que descansa bien. Lleva ropa de senderismo, protección solar y mucha hidratación. Será un día para recordar.\nCon todo mi cariño, ",
+      pack:["Ropa de senderismo","Protección solar","Hidratación","Ganas de aventura"] },
+
+    { date:"2026-12-06", at:"2026-12-06T19:30:00-06:00", unlock:"2026-12-03T08:00:00-06:00",
+      title:"Restaurante Mirador La Torre", place:"Aventura #2 · Domingo, 7:30 p.m.",
+      message:"Esta vez no es una aventura, es una cita solo para nosotras.\nDebes estar lista a las 7:30 p.m. Vístete bien: cómoda, pero linda como siempre. Yo me encargo del resto.\nCon todo mi cariño, ",
+      pack:["Outfit bonito pero cómodo","Lista a las 7:30 p.m.","Buen apetito","Tu mejor sonrisa"] },
+
+    { date:"2026-12-13", at:"2026-12-13T09:00:00-06:00", unlock:"2026-12-10T08:00:00-06:00",
+      title:"Cataratas Nauyacas", place:"Aventura #3 · Domingo, 9:00 a.m.",
+      message:"Esta aventura es de cascadas y agua.\nSaldremos a las 9:00 a.m. Lleva ropa cómoda para senderismo y ropa para meterte al agua. Vamos a disfrutar de la naturaleza a lo grande.\nCon todo mi cariño, ",
+      pack:["Ropa cómoda de senderismo","Ropa para meterse al agua","Toalla","Ropa seca de cambio"] },
+
+    { date:"2026-12-22", at:"2026-12-22T10:00:00-06:00", unlock:"2026-12-19T08:00:00-06:00", final:true,
+      title:"Parapente", place:"Aventura #4 · Martes, 10:00 a.m.",
+      message:"La última aventura es la más especial y la más extrema: vamos a volar en parapente.\nSerá el martes 22 de diciembre a las 10:00 a.m. Ponte ropa deportiva, bloqueador y llévate tu botella de agua. Vamos a celebrarte por todo lo alto, y también estaremos juntas.\nCon todo mi cariño, ",
+      pack:["Ropa deportiva","Bloqueador","Hidratación","Mucha emoción"] }
+  ],
+
+  // Pantalla final: se abre a las 12:00 a.m. del 25 de diciembre
+  birthday: {
+    date:"2026-12-25", unlock:"2026-12-25T00:00:00-06:00",
+    title:"¡Oficialmente tu cumpleaños!",
+    paragraphs:[
+      "Espero que cada minuto compartido conmigo valga la pena, mi amor.",
+      "Deseo lo mejor para usted: que todos sus objetivos se cumplan, que tengas mucha paz, que recibas mucho amor y, sobre todo, que seas muy feliz.",
+      "Usted tiene mucho valor como persona y, ante mis ojos, es mi persona."
+    ],
+    closing:"Te amo."
+  }
 };
 /* ===================================== */
 
@@ -97,15 +128,30 @@ const DAYS=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"
 const fmtDate = s => { const [y,m,d]=s.split("-").map(Number); const w=new Date(y,m-1,d).getDay(); return `${DAYS[w]} ${d} de ${MONTHS[m-1]}`; };
 const parts = ms => { const s=Math.max(0,Math.floor(ms/1000)); return {d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60}; };
 const pad = n => String(n).padStart(2,"0");
-const isOpen = st => demo || Date.now() >= new Date(st.unlock).getTime();
+const time = t => new Date(t).getTime();
+const isOpen = o => demo || Date.now() >= time(o.unlock);
 const esc = t => String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const B = CONFIG.birthday;
 
 $("name").textContent = CONFIG.herName;
 $("foot").textContent = "Hecho con cariño por " + CONFIG.myName;
 
+function confetti(){
+  if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  const c=$("fx"), x=c.getContext("2d"), cols=["#ff5f7e","#ffc24b","#6fcaa8","#ffffff","#ff8a5c"];
+  c.width=innerWidth; c.height=innerHeight; c.style.display="block";
+  const ps=Array.from({length:140},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.6,w:6+Math.random()*6,h:8+Math.random()*8,vy:2+Math.random()*3.5,vx:-1.5+Math.random()*3,r:Math.random()*6,vr:-.2+Math.random()*.4,c:cols[Math.random()*5|0]}));
+  let f=0;
+  (function loop(){
+    x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore();});
+    if(++f<320) requestAnimationFrame(loop); else {x.clearRect(0,0,c.width,c.height);c.style.display="none";}
+  })();
+}
+
 function build(){
-  const stops = CONFIG.stops, wasOpen = build.prev || [];
-  $("trail").innerHTML = stops.map((st,i)=>{
+  const stops = CONFIG.stops, wasOpen = build.prev || [], bOpen = isOpen(B);
+  let html = stops.map((st,i)=>{
     const open = isOpen(st);
     const cls = ["stop", open?"open":"", st.final?(open?"final":"final locked-final"):"", open&&wasOpen[i]===false?"fresh":""].join(" ");
     const body = open
@@ -116,24 +162,43 @@ function build(){
          <div class="cd">🔒 Se abre en <b data-u="${i}"></b></div>`;
     return `<article class="${cls} ${open?"":"locked"}"><span class="dot">${open?"✓":"🔒"}</span><div class="card">${body}</div></article>`;
   }).join("");
-  build.prev = stops.map(isOpen);
+
+  if (!bOpen) html += `<article class="stop locked"><span class="dot">🔒</span><div class="card">
+      <p class="when">${fmtDate(B.date)}</p><h2>Una última sorpresa</h2>
+      <div class="cd">🔒 Se abre en <b data-u="b"></b></div></div></article>`;
+  $("trail").innerHTML = html;
+
+  $("gift").innerHTML = bOpen ? `<div class="gift"><div class="big">🎂</div><h2>${esc(B.title)}</h2>
+      ${B.paragraphs.map(p=>`<p>${esc(p)}</p>`).join("")}
+      <div class="sign">${esc(B.closing)}<br>— ${esc(CONFIG.myName)}</div>
+      <button class="btn" type="button" onclick="confetti()">🎉 Lanzar confeti</button></div>` : "";
+  if (bOpen) {
+    $("intro").textContent = "Gracias por cada aventura. Esto es para ti.";
+    if (!build.shown) { build.shown = true; setTimeout(confetti, 400); }
+  }
+  build.prev = stops.map(isOpen); build.prevB = bOpen;
 }
 
 function tick(){
   const now = Date.now(), stops = CONFIG.stops;
-  if (stops.some((st,i)=>isOpen(st)!==build.prev[i])) build();
-  stops.forEach((st,i)=>{
-    const el = document.querySelector(`[data-u="${i}"]`);
-    if(el){ const p=parts(new Date(st.unlock)-now); el.textContent = `${p.d}d ${pad(p.h)}h ${pad(p.m)}m ${pad(p.s)}s`; }
+  if (stops.some((st,i)=>isOpen(st)!==build.prev[i]) || isOpen(B)!==build.prevB) build();
+  const setCd = (key,t)=>{ const el=document.querySelector(`[data-u="${key}"]`); if(el){ const p=parts(time(t)-now); el.textContent=`${p.d}d ${pad(p.h)}h ${pad(p.m)}m ${pad(p.s)}s`; } };
+  stops.forEach((st,i)=>setCd(i,st.unlock)); setCd("b",B.unlock);
+
+  // Próximo hito: desbloqueo o hora real de la aventura (siempre con la fecha real)
+  const c = [];
+  stops.forEach(st=>{
+    if (time(st.unlock)>now) c.push({t:time(st.unlock),l:"Próxima sorpresa se abre en"});
+    else if (time(st.at)>now) c.push({t:time(st.at),l:"Faltan para: "+st.title});
   });
-  const nextStop = stops.find(st=>!isOpen(st));
-  let target, label;
-  if (nextStop){ target = new Date(nextStop.unlock); label = "Próxima sorpresa se abre en"; }
-  else { const last = new Date(stops[stops.length-1].date+"T08:00:00-06:00"); target = last; label = now<last ? "Faltan para la aventura final" : "Gracias por volar conmigo 💛"; }
-  const p = parts(target - now);
-  $("nextLabel").textContent = label;
-  $("clock").innerHTML = (target-now<=0 && !nextStop) ? "" :
-    [["d",p.d,"días"],["h",pad(p.h),"horas"],["m",pad(p.m),"min"],["s",pad(p.s),"seg"]].map(x=>`<div><b>${x[1]}</b><span>${x[2]}</span></div>`).join("");
+  if (time(B.unlock)>now) c.push({t:time(B.unlock),l:"La sorpresa final se abre en"});
+  c.sort((a,b)=>a.t-b.t);
+  $("nextBox").hidden = !c.length;
+  if (c.length){
+    const p = parts(c[0].t-now);
+    $("nextLabel").textContent = c[0].l;
+    $("clock").innerHTML = [[p.d,"días"],[pad(p.h),"horas"],[pad(p.m),"min"],[pad(p.s),"seg"]].map(x=>`<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
+  }
 }
 build(); tick(); setInterval(tick,1000);
 </script>
